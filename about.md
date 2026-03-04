@@ -42,5 +42,5 @@ Before ML infrastructure, I worked in telecommunications and cloud architecture 
 ### Connect
 
 - **LinkedIn:** [linkedin.com/in/tiberiusasiago](https://www.linkedin.com/in/tiberiusasiago)
-- **GitHub:** [github.com/Tiberius-Asiago](https://github.com/Tremblant)
+- **GitHub:** [github.com/Tiberius_Asiago](https://github.com/Tremblant)
 - **Email:** [tibeasiago@gmail.com](mailto:tibeasiago@gmail.com)

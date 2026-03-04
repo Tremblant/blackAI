@@ -314,4 +314,4 @@ The foundation is solid. Now we build.
 
 ---
 
-*Building AI infrastructure from Nairobi. Follow along on [GitHub](https://github.com/Tiberius-Asiago).*
+*Building AI infrastructure from Nairobi. Follow along on [GitHub](https://github.com/Tremblant).*

@@ -337,4 +337,4 @@ Most AI engineers reach the model. Fewer reach the platform. That's the gap I'm 
 
 ---
 
-*Building AI infrastructure from Nairobi. Follow the full build on [GitHub](https://github.com/Tiberius-Asiago).*
+*Building AI infrastructure from Nairobi. Follow the full build on [GitHub](https://github.com/Tremblant).*

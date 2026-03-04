@@ -317,4 +317,4 @@ The infrastructure is ready. Time to build on top of it.
 
 ---
 
-*Building AI infrastructure from Nairobi. Follow along on [GitHub](https://github.com/Tiberius-Asiago).*
+*Building AI infrastructure from Nairobi. Follow along on [GitHub](https://github.com/Tremblant).*

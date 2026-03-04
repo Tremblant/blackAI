@@ -1,11 +1,73 @@
 <!DOCTYPE html>
 <html lang="en-us">
 
-  {% include head.html %}
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-  <body>
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-    {% include sidebar.html %}
+  <title>
+    {% if page.title == "Home" %}
+      {{ site.title }} &middot; {{ site.tagline }}
+    {% else %}
+      {{ page.title }} &middot; {{ site.title }}
+    {% endif %}
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ '/public/css/poole.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/public/css/syntax.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/public/css/lanyon.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/public/css/custom.css' | relative_url }}">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="{{ '/public/favicon.ico' | relative_url }}">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ '/atom.xml' | relative_url }}">
+</head>
+
+
+  <body class="theme-base-0b">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>{{ site.description }}</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
+
+    {% assign pages_list = site.pages | sort: 'title' %}
+    {% for page in pages_list %}
+      {% if page.title and page.layout == 'page' %}
+      <a class="sidebar-nav-item{% if page.url == page.url %} {% endif %}" href="{{ page.url | relative_url }}">{{ page.title }}</a>
+      {% endif %}
+    {% endfor %}
+
+    <a class="sidebar-nav-item" href="{{ '/archive' | relative_url }}">Archive</a>
+    <span class="sidebar-nav-item">Currently v1.0</span>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      <a href="{{ site.author.linkedin }}" target="_blank">LinkedIn</a> &middot;
+      <a href="{{ site.author.github }}" target="_blank">GitHub</a>
+    </p>
+    <p style="font-size:0.78rem; opacity:0.6;">
+      Building AI infrastructure from Nairobi, Kenya.
+    </p>
+  </div>
+</div>
+
 
     <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
          content to avoid any CSS collisions with our real content. -->
@@ -13,7 +75,7 @@
       <div class="masthead">
         <div class="container">
           <h3 class="masthead-title">
-            <a href="{{ site.baseurl }}/" title="Home">{{ site.title }}</a>
+            <a href="{{ '/' | relative_url }}" title="Home">{{ site.title }}</a>
             <small>{{ site.tagline }}</small>
           </h3>
         </div>
@@ -24,8 +86,24 @@
       </div>
     </div>
 
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+    <label class="sidebar-toggle" for="sidebar-checkbox"></label>
 
-    <script src='{{ site.baseurl }}/public/js/script.js'></script>
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
   </body>
 </html>

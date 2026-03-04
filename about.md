@@ -3,27 +3,44 @@ layout: page
 title: About
 ---
 
-<p class="message">
-  Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
-</p>
+## Tiberius Asiago — AI Infrastructure Engineer
 
-In the novel, *The Strange Case of Dr. Jeykll and Mr. Hyde*, Mr. Poole is Dr. Jekyll's virtuous and loyal butler. Similarly, Poole is an upstanding and effective butler that helps you build Jekyll themes. It's made by [@mdo](https://twitter.com/mdo).
+I'm building production-grade AI systems from Nairobi, Kenya.
 
-There are currently two themes built on Poole:
+With a background in **telecommunications and cloud infrastructure**, I specialize in the engineering layer that makes AI reliable at scale — not just the models themselves, but the systems that train, serve, monitor, and sustain them.
 
-* [Hyde](http://hyde.getpoole.com)
-* [Lanyon](http://lanyon.getpoole.com)
+---
 
-Learn more and contribute on [GitHub](https://github.com/poole).
+### What This Blog Is
 
-## Setup
+**blackAI** is where I document my journey mastering AI infrastructure:
 
-Some fun facts about the setup of this project include:
+- **MLOps pipelines** — experiment tracking, model registries, reproducibility
+- **Production ML APIs** — FastAPI, Docker, CI/CD for model serving
+- **GPU infrastructure** — CUDA, PyTorch training, distributed compute
+- **Kubernetes for ML** — autoscaling, pod scheduling, Helm deployments
+- **Observability** — Prometheus, Grafana, alerting on model drift
+- **Infrastructure as Code** — Terraform, cloud architecture patterns
+- **Lessons from telecom** — applying networking and systems thinking to AI
 
-* Built for [Jekyll](https://jekyllrb.com)
-* Developed on GitHub and hosted for free on [GitHub Pages](https://pages.github.com)
-* Coded with [Atom](https://atom.io)
+This is a build-in-public journal. I document what works, what breaks, and what I learn.
 
-Have questions or suggestions? Feel free to [open an issue on GitHub](https://github.com/poole/issues/new) or [ask me on Twitter](https://twitter.com/mdo).
+---
 
-Thanks for reading!
+### Background
+
+Before ML infrastructure, I worked in telecommunications and cloud architecture — designing VPCs, VPNs, SD-WAN systems, and security infrastructure. That background gives me a systems-first perspective on AI platforms that I find invaluable.
+
+---
+
+### Vision
+
+> To design reliable AI platforms that empower startups across Africa and emerging markets.
+
+---
+
+### Connect
+
+- **LinkedIn:** [linkedin.com/in/tiberiusasiago](https://www.linkedin.com/in/tiberiusasiago)
+- **GitHub:** [github.com/Tiberius-Asiago](https://github.com/Tiberius-Asiago)
+- **Email:** [tibeasiago@gmail.com](mailto:tibeasiago@gmail.com)

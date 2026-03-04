@@ -1,0 +1,117 @@
+/*
+ * blackAI — Custom styles extending Lanyon
+ * Tiberius Asiago
+ */
+
+/* ── Import a more technical/distinctive font ── */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+/* ── Root variables ── */
+:root {
+  --accent:       #00e5a0;    /* terminal green */
+  --accent-dim:   #00b37a;
+  --dark:         #0d1117;
+  --code-bg:      #161b22;
+  --border:       #30363d;
+}
+
+/* ── Typography ── */
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ── Post title links ── */
+.post-title a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Tags ── */
+.post-tags {
+  margin: 0.3rem 0 0.8rem 0;
+}
+
+.tag {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+
+/* ── Read more link ── */
+.read-more {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.read-more:hover {
+  border-bottom-color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Code blocks ── */
+pre, code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+}
+
+pre {
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Sidebar custom ── */
+.sidebar {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.sidebar-nav-item {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Post date ── */
+.post-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+/* ── Sidebar footer ── */
+.sidebar-footer {
+  padding: 1rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ── Blockquotes — used for callouts ── */
+blockquote {
+  border-left: 3px solid var(--accent);
+  font-style: normal;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  background: rgba(0, 229, 160, 0.04);
+  padding: 0.8rem 1.2rem;
+  border-radius: 0 4px 4px 0;
+}

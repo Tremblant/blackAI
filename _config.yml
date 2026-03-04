@@ -7,7 +7,7 @@
 title:            "blackAI"
 tagline:          "AI Infrastructure Notes from Africa"
 description:      "Deep dives into MLOps, AI infrastructure, GPU systems, and production ML from an engineer building from Nairobi."
-url:              "https://Tiberius-Asiago.github.io"
+url:              "https://Tremblant.github.io"
 baseurl:          "/blackAI"
 
 # Author
@@ -15,7 +15,7 @@ author:
   name:           "Tiberius Asiago"
   email:          "tibeasiago@gmail.com"
   linkedin:       "https://www.linkedin.com/in/tiberiusasiago"
-  github:         "https://github.com/Tiberius-Asiago"
+  github:         "https://github.com/Tremblant"
 
 # Build settings
 markdown:         kramdown

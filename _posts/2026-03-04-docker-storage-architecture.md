@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "How I Architected My AI Workstation Storage So Docker Never Crashes My OS Again"
-date: 2025-03-04
+date: 2026-03-04
 tags: [docker, infrastructure, storage, mlops, devops, gpu]
 excerpt: "An 8GB PyTorch image sitting on your system disk is a disaster waiting to happen. Here's how I separated OS, applications, and Docker storage across three disks — and why every AI infrastructure engineer should do this before their first training run."
 ---

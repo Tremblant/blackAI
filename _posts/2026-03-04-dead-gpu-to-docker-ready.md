@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Dead GPU to Docker-Ready: How I Built a Complete GPU Container Stack from Scratch"
-date: 2025-03-04
+date: 2026-03-04
 tags: [gpu, docker, nvidia, cuda, infrastructure, mlops]
 excerpt: "nvidia-smi failed. No driver. No container runtime. No GPU. Here's how I diagnosed, fixed, and verified a complete GPU container stack — and what every AI infrastructure engineer needs to understand about the layers underneath."
 ---

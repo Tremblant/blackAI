@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My AI Infrastructure Journey"
-date: 2025-03-03
+date: 2026-03-03
 tags: [mlops, infrastructure, career, journey]
 excerpt: "Why I'm building AI infrastructure from scratch — and what that means coming from a telecom and cloud background in Nairobi."
 ---

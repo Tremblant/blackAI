@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "I Built a Mini ML Platform on My Workstation — Here's the Architecture"
-date: 2025-03-04
+date: 2026-03-04
 tags: [mlops, kubernetes, docker, infrastructure, architecture, fastapi]
 excerpt: "Most AI engineers train models. Fewer think about where models live, how they're served, and what keeps the whole system from collapsing under load. This is how I designed a three-layer ML platform from scratch — on a single workstation — using the same patterns production clusters use."
 ---

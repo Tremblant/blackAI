@@ -156,7 +156,7 @@ Here is how all three layers interact when a request hits the deployed API:
 
 <div style="margin: 28px 0;">
   <iframe 
-    src="/blackAI/assets/diagrams/ml-platform-traffic-flow.html" 
+    src="{{ '/assets/diagrams/ml-platform-traffic-flow.html' | relative_url }}" 
     width="100%" 
     height="540" 
     frameborder="0" 

@@ -27,7 +27,7 @@ Before touching a terminal, here's what a complete GPU container stack looks lik
 
 <div style="margin: 28px 0;">
   <iframe 
-    src="/blackAI/assets/diagrams/gpu-stack-health.html" 
+    src="{{ '/assets/diagrams/gpu-stack-health.html' | relative_url }}" 
     width="100%" 
     height="540" 
     frameborder="0" 

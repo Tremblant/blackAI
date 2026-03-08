@@ -22,7 +22,7 @@ The default Docker setup puts everything in `/var/lib/docker` — which sits on 
 
 <div style="margin: 28px 0;">
   <iframe 
-    src="/blackAI/assets/diagrams/storage-exploded-view.html" 
+    src="{{ '/assets/diagrams/storage-exploded-view.html' | relative_url }}" 
     width="100%" 
     height="580" 
     frameborder="0" 

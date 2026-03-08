@@ -21,18 +21,20 @@ This post documents how I redesigned my workstation's storage architecture befor
 The default Docker setup puts everything in `/var/lib/docker` — which sits on your system disk. For general software development, that's fine. For AI workloads, it's a structural problem.
 
 ```
-Default Layout (dangerous for AI workloads)
-┌─────────────────────────────────────────────────────┐
-│                   System Disk (/)                   │
-│                                                     │
-│  OS binaries        → ~5GB                         │
-│  System services    → ~2GB                         │
-│  /var/lib/docker/   → UNLIMITED GROWTH              │
-│    ├── pytorch image       8.34 GB                  │
-│    ├── nvidia/cuda image   3.2  GB                  │
-│    ├── model artifacts     variable                 │
-│    └── build cache         variable                 │
-└─────────────────────────────────────────────────────┘
+<div style="margin: 28px 0;">
+  <iframe 
+    src="/blackAI/assets/diagrams/storage-exploded-view.html" 
+    width="100%" 
+    height="580" 
+    frameborder="0" 
+    scrolling="no"
+    style="border: 1px solid #1a2a3a; border-radius: 3px; display: block;">
+  </iframe>
+  <p style="font-size: 0.72rem; color: #4a6070; margin-top: 8px; font-family: monospace;">
+    ↑ Interactive — click "Simulate Crash" to see failure isolation in action
+  </p>
+</div>
+
 ```
 
 When that disk fills, your OS stops functioning. Logs stop writing. Package managers fail. Running containers crash. It's not a graceful degradation — it's a hard stop.

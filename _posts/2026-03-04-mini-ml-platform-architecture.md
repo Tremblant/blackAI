@@ -155,43 +155,20 @@ Building this habit locally means the mental model for cloud storage is already 
 Here is how all three layers interact when a request hits the deployed API:
 
 ```
-                        ┌─────────────────┐
-                        │   User / Client  │
-                        └────────┬────────┘
-                                 │ HTTP Request
-                                 ▼
-                   ┌─────────────────────────┐
-                   │  Kubernetes Service      │
-                   │  (NodePort :30080)       │
-                   └────────────┬────────────┘
-                                │ routes to pod
-                   ┌────────────▼────────────┐
-                   │  Kubernetes Deployment   │
-                   │  replicas: 1–N pods      │
-                   └────────────┬────────────┘
-                                │
-              ┌─────────────────┼─────────────────┐
-              ▼                 ▼                  ▼
-        ┌──────────┐     ┌──────────┐      ┌──────────┐
-        │  Pod 1   │     │  Pod 2   │      │  Pod N   │
-        │ FastAPI  │     │ FastAPI  │      │ FastAPI  │
-        │Container │     │Container │      │Container │
-        └────┬─────┘     └────┬─────┘     └────┬─────┘
-             │                │                 │
-             └────────────────┼─────────────────┘
-                              │ volumeMount
-                              ▼
-                  ┌─────────────────────┐
-                  │  /app/models/       │
-                  │  (mounted from)     │
-                  └──────────┬──────────┘
-                             │ hostPath / PVC
-                             ▼
-                  ┌─────────────────────┐
-                  │  /data/models/      │
-                  │  ai-starter/        │
-                  │  model.pt           │  ← sdc (Data Layer)
-                  └─────────────────────┘
+<div style="margin: 28px 0;">
+  <iframe 
+    src="/blackAI/assets/diagrams/ml-platform-traffic-flow.html" 
+    width="100%" 
+    height="540" 
+    frameborder="0" 
+    scrolling="no"
+    style="border: 1px solid #1a2a3a; border-radius: 3px; display: block;">
+  </iframe>
+  <p style="font-size: 0.72rem; color: #4a6070; margin-top: 8px; font-family: monospace;">
+    ↑ Interactive — click the scenario buttons to animate traffic flow
+  </p>
+</div>
+
 ```
 
 Every pod reads the same model file. When you scale from 1 to 4 replicas, there's no model duplication — all pods mount the same source. This is exactly how production inference clusters operate.

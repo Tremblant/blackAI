@@ -26,19 +26,20 @@ This is the story of diagnosing that failure, fixing it layer by layer, and endi
 Before touching a terminal, here's what a complete GPU container stack looks like — and where things break:
 
 ```
-┌─────────────────────────────────────────────────┐
-│           Your AI Workload (PyTorch, etc.)      │
-├─────────────────────────────────────────────────┤
-│              Docker Container                   │
-├─────────────────────────────────────────────────┤
-│         NVIDIA Container Toolkit (Runtime)      │
-├─────────────────────────────────────────────────┤
-│              NVIDIA Driver (470)                │
-├─────────────────────────────────────────────────┤
-│           Linux Kernel + GPU Device Node        │
-├─────────────────────────────────────────────────┤
-│              Physical GPU (GT 710)              │
-└─────────────────────────────────────────────────┘
+<div style="margin: 28px 0;">
+  <iframe 
+    src="/blackAI/assets/diagrams/gpu-stack-health.html" 
+    width="100%" 
+    height="540" 
+    frameborder="0" 
+    scrolling="no"
+    style="border: 1px solid #1a2a3a; border-radius: 3px; display: block;">
+  </iframe>
+  <p style="font-size: 0.72rem; color: #4a6070; margin-top: 8px; font-family: monospace;">
+    ↑ Interactive — select a scenario, then click each layer to inspect commands and output
+  </p>
+</div>
+
 ```
 
 Each layer depends on the one below it. If the driver layer breaks, everything above it fails — silently or loudly. My stack was broken at the driver layer. The fix required working up from the bottom.

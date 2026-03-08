@@ -25,7 +25,6 @@ This is the story of diagnosing that failure, fixing it layer by layer, and endi
 
 Before touching a terminal, here's what a complete GPU container stack looks like — and where things break:
 
-```
 <div style="margin: 28px 0;">
   <iframe 
     src="/blackAI/assets/diagrams/gpu-stack-health.html" 
@@ -39,8 +38,6 @@ Before touching a terminal, here's what a complete GPU container stack looks lik
     ↑ Interactive — select a scenario, then click each layer to inspect commands and output
   </p>
 </div>
-
-```
 
 Each layer depends on the one below it. If the driver layer breaks, everything above it fails — silently or loudly. My stack was broken at the driver layer. The fix required working up from the bottom.
 

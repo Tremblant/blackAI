@@ -154,7 +154,6 @@ Building this habit locally means the mental model for cloud storage is already 
 
 Here is how all three layers interact when a request hits the deployed API:
 
-```
 <div style="margin: 28px 0;">
   <iframe 
     src="/blackAI/assets/diagrams/ml-platform-traffic-flow.html" 
@@ -169,7 +168,6 @@ Here is how all three layers interact when a request hits the deployed API:
   </p>
 </div>
 
-```
 
 Every pod reads the same model file. When you scale from 1 to 4 replicas, there's no model duplication — all pods mount the same source. This is exactly how production inference clusters operate.
 

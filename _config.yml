@@ -58,3 +58,6 @@ collections:
     output: true
   tags:
     output: true
+
+kramdown:
+  parse_block_html: true

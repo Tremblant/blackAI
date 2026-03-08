@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #060a0f;
+    --panel: #0a1018;
+    --border: #0f1e2e;
+    --green: #00e5a0;
+    --yellow: #ffcc00;
+    --red: #ff4444;
+    --dim: #1a3040;
+    --font: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    padding: 0;
+    margin: 0;
+  }
+
+  .dashboard {
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* Header */
+  .dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .dash-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .dash-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Metric rows */
+  .metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .metric-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .metric-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .metric-name { font-size: 0.62rem; color: var(--dim); letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .metric-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .metric-bar-wrap { width: 60px; height: 4px; background: #0a1018; border-radius: 2px; overflow: hidden; }
+  .metric-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+  .metric-val { font-size: 0.65rem; font-weight: 600; width: 36px; text-align: right; }
+
+  /* Service list */
+  .section-label {
+    padding: 6px 12px 4px;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0f2030;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 12px;
+    border-bottom: 1px solid #060e18;
+  }
+  .service-name { font-size: 0.62rem; color: #3a5060; }
+  .service-badge {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    padding: 1px 7px;
+    border: 1px solid;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* Uptime sparkline */
+  .sparkline-row {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .spark-label { font-size: 0.55rem; color: #0f2030; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+  .sparkline { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+  .spark-bar {
+    flex: 1;
+    border-radius: 1px;
+    background: #0f1e2e;
+    min-height: 2px;
+    transition: height 0.8s ease, background 0.3s;
+  }
+
+  /* Footer */
+  .dash-footer {
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-time { font-size: 0.55rem; color: #0f2030; letter-spacing: 0.08em; }
+  .footer-status { font-size: 0.55rem; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="dash-header">
+    <span class="dash-title">System Health — blackAI Lab</span>
+    <div class="dash-dot"></div>
+  </div>
+
+  <!-- GPU Metrics -->
+  <div class="section-label">GPU / Compute</div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" style="background:#00e5a0"></div>
+      <span class="metric-name">GPU Driver</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-driver" style="width:100%; background:#00e5a0"></div></div>
+      <span class="metric-val" id="val-driver" style="color:#00e5a0">470</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" id="dot-gpu" style="background:#00e5a0"></div>
+      <span class="metric-name">GPU Util</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-gpu" style="width:12%; background:#00e5a0"></div></div>
+      <span class="metric-val" id="val-gpu" style="color:#00e5a0">12%</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" style="background:#00aaff"></div>
+      <span class="metric-name">GPU Mem</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-mem" style="width:42%; background:#00aaff"></div></div>
+      <span class="metric-val" id="val-mem" style="color:#00aaff">42%</span>
+    </div>
+  </div>
+
+  <!-- Disk Metrics -->
+  <div class="section-label">Storage</div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" style="background:#00aaff"></div>
+      <span class="metric-name">sdb (OS)</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-sdb" style="width:28%; background:#00aaff"></div></div>
+      <span class="metric-val" id="val-sdb" style="color:#00aaff">28%</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" style="background:#a855f7"></div>
+      <span class="metric-name">sda (Apps)</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-sda" style="width:4%; background:#a855f7"></div></div>
+      <span class="metric-val" id="val-sda" style="color:#a855f7">4%</span>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-left">
+      <div class="metric-dot" style="background:#00e5a0"></div>
+      <span class="metric-name">sdc (Data)</span>
+    </div>
+    <div class="metric-right">
+      <div class="metric-bar-wrap"><div class="metric-bar-fill" id="bar-sdc" style="width:6%; background:#00e5a0"></div></div>
+      <span class="metric-val" id="val-sdc" style="color:#00e5a0">6%</span>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <div class="section-label">Services</div>
+
+  <div class="service-row">
+    <span class="service-name">Docker Engine</span>
+    <span class="service-badge" style="border-color:#00e5a0; color:#00e5a0">running</span>
+  </div>
+  <div class="service-row">
+    <span class="service-name">Minikube</span>
+    <span class="service-badge" id="badge-k8s" style="border-color:#00e5a0; color:#00e5a0">running</span>
+  </div>
+  <div class="service-row">
+    <span class="service-name">NVIDIA CTK</span>
+    <span class="service-badge" style="border-color:#00e5a0; color:#00e5a0">active</span>
+  </div>
+  <div class="service-row">
+    <span class="service-name">FastAPI Pod</span>
+    <span class="service-badge" id="badge-api" style="border-color:#ffcc00; color:#ffcc00">building</span>
+  </div>
+
+  <!-- Sparkline -->
+  <div class="sparkline-row">
+    <div class="spark-label">Request Throughput — last 30s</div>
+    <div class="sparkline" id="sparkline"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="dash-footer">
+    <span class="footer-time" id="dash-time">—</span>
+    <span class="footer-status">● OPERATIONAL</span>
+  </div>
+
+</div>
+
+<script>
+  // Sparkline
+  const sparkData = [2,4,3,7,5,9,6,8,12,10,14,11,16,13,18,15,20,17,14,19,16,22,18,15,20,17,23,19,16,21];
+  const spark = document.getElementById('sparkline');
+  const maxV = Math.max(...sparkData);
+  sparkData.forEach(v => {
+    const bar = document.createElement('div');
+    bar.className = 'spark-bar';
+    const h = Math.max(2, Math.round((v / maxV) * 24));
+    bar.style.height = h + 'px';
+    bar.style.background = v > 15 ? '#00e5a0' : v > 8 ? '#00aaff' : '#1a3040';
+    spark.appendChild(bar);
+  });
+
+  // Live clock
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('dash-time').textContent =
+      now.toTimeString().slice(0,8) + ' EAT';
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  // Animate GPU util (idle fluctuation)
+  let gpuBase = 12;
+  setInterval(() => {
+    const v = Math.max(0, Math.min(100, gpuBase + (Math.random() * 8 - 4)));
+    gpuBase = v;
+    document.getElementById('bar-gpu').style.width = v + '%';
+    document.getElementById('val-gpu').textContent = Math.round(v) + '%';
+  }, 2200);
+
+  // FastAPI pod eventually starts
+  setTimeout(() => {
+    const b = document.getElementById('badge-api');
+    b.textContent = 'running';
+    b.style.borderColor = '#00e5a0';
+    b.style.color = '#00e5a0';
+  }, 4000);
+</script>
+</body>
+</html>

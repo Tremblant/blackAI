@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #040810;
+    --panel: #090f18;
+    --border: #0f1e2e;
+    --green: #00e5a0;
+    --red: #ff4444;
+    --yellow: #ffcc00;
+    --dim: #1a3040;
+    --font: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: #c8d8e8;
+    padding: 28px 20px;
+  }
+
+  .title { text-align: center; font-size: 0.68rem; letter-spacing: 0.15em; color: #1a3040; text-transform: uppercase; margin-bottom: 5px; }
+  .subtitle { text-align: center; font-size: 1rem; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+  .tagline { text-align: center; font-size: 0.72rem; color: #1a3040; margin-bottom: 32px; }
+
+  /* ── Controls ── */
+  .controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+  .btn {
+    background: transparent; border: 1px solid #0f1e2e; color: #1a3040;
+    font-family: var(--font); font-size: 0.68rem; letter-spacing: 0.1em;
+    padding: 7px 16px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+  }
+  .btn:hover, .btn.active { border-color: var(--green); color: var(--green); background: rgba(0,229,160,0.05); }
+
+  /* ── Main layout: bars + detail ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 600px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Signal bars column ── */
+  .bars-col { display: flex; flex-direction: column; gap: 8px; }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 4px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .bar-row:hover { border-color: #0f1e2e; }
+  .bar-row.selected { border-color: var(--green); }
+
+  .bar-level {
+    font-size: 0.6rem;
+    color: #1a3040;
+    letter-spacing: 0.08em;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .bar-graphic {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .bar-seg {
+    width: 8px;
+    border-radius: 1px;
+    background: var(--dim);
+    transition: background 0.6s, height 0.6s, box-shadow 0.6s;
+  }
+
+  /* Lit states */
+  .bar-seg.lit-green {
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(0,229,160,0.6);
+  }
+  .bar-seg.lit-yellow {
+    background: var(--yellow);
+    box-shadow: 0 0 6px rgba(255,204,0,0.5);
+  }
+  .bar-seg.lit-red {
+    background: var(--red);
+    box-shadow: 0 0 6px rgba(255,68,68,0.5);
+  }
+  .bar-seg.pulse {
+    animation: seg-pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes seg-pulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+
+  .bar-info { flex: 1; min-width: 0; }
+  .bar-name { font-size: 0.72rem; font-weight: 600; line-height: 1.2; color: #6080a0; transition: color 0.3s; }
+  .bar-name.lit { color: #c8d8e8; }
+  .bar-status {
+    font-size: 0.62rem;
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    transition: color 0.3s;
+  }
+
+  /* ── Detail panel ── */
+  .detail-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    min-height: 320px;
+    position: relative;
+  }
+
+  .detail-inactive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 280px;
+    font-size: 0.72rem;
+    color: #1a3040;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .detail-content { display: none; }
+  .detail-content.active { display: block; }
+
+  .detail-layer {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .detail-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .command-block {
+    background: #040810;
+    border: 1px solid #0f1e2e;
+    border-left: 2px solid;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .output-block {
+    background: #040810;
+    border: 1px solid #0f1e2e;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 0.68rem;
+    line-height: 1.7;
+    color: #6080a0;
+    white-space: pre-wrap;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid;
+    margin-top: 8px;
+    font-weight: 700;
+  }
+
+  .detail-desc {
+    font-size: 0.7rem;
+    color: #4a6070;
+    line-height: 1.7;
+    margin-top: 10px;
+  }
+
+  /* ── Overall status bar ── */
+  .status-bar {
+    max-width: 800px;
+    margin: 20px auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .status-card {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: center;
+    transition: border-color 0.4s;
+  }
+  .status-card .s-label { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: #1a3040; margin-bottom: 4px; }
+  .status-card .s-val { font-size: 0.85rem; font-weight: 700; color: #1a3040; transition: color 0.4s; }
+
+  .ticker {
+    max-width: 800px;
+    margin: 12px auto 0;
+    font-size: 0.65rem;
+    color: #1a3040;
+    letter-spacing: 0.08em;
+    text-align: center;
+    border-top: 1px solid #0f1e2e;
+    padding-top: 12px;
+  }
+  .ticker span { transition: color 0.4s; }
+</style>
+</head>
+<body>
+
+<p class="title">Interactive Troubleshooting Diagram</p>
+<p class="subtitle">GPU Stack — Health Signal</p>
+<p class="tagline">Click a layer to inspect • Select scenario to simulate state</p>
+
+<div class="controls">
+  <button class="btn active" onclick="setScenario('broken', this)">Broken State</button>
+  <button class="btn" onclick="setScenario('driver', this)">Driver Fixed</button>
+  <button class="btn" onclick="setScenario('toolkit', this)">CTK Installed</button>
+  <button class="btn" onclick="setScenario('full', this)">✓ Full Stack</button>
+</div>
+
+<div class="main-grid">
+
+  <!-- SIGNAL BARS -->
+  <div class="bars-col">
+
+    <div class="bar-row" id="row-0" onclick="selectLayer(0)">
+      <div class="bar-level">L1</div>
+      <div class="bar-graphic">
+        <div class="bar-seg" id="s0-0" style="height:10px"></div>
+        <div class="bar-seg" id="s0-1" style="height:16px"></div>
+        <div class="bar-seg" id="s0-2" style="height:22px"></div>
+        <div class="bar-seg" id="s0-3" style="height:28px"></div>
+        <div class="bar-seg" id="s0-4" style="height:34px"></div>
+      </div>
+      <div class="bar-info">
+        <div class="bar-name" id="bn-0">HARDWARE</div>
+        <div class="bar-status" id="bs-0" style="color:#1a3040;">Linux Kernel • PCI Devices</div>
+      </div>
+    </div>
+
+    <div class="bar-row" id="row-1" onclick="selectLayer(1)">
+      <div class="bar-level">L2</div>
+      <div class="bar-graphic">
+        <div class="bar-seg" id="s1-0" style="height:10px"></div>
+        <div class="bar-seg" id="s1-1" style="height:16px"></div>
+        <div class="bar-seg" id="s1-2" style="height:22px"></div>
+        <div class="bar-seg" id="s1-3" style="height:28px"></div>
+        <div class="bar-seg" id="s1-4" style="height:34px"></div>
+      </div>
+      <div class="bar-info">
+        <div class="bar-name" id="bn-1">DRIVER</div>
+        <div class="bar-status" id="bs-1" style="color:#1a3040;">nvidia-driver-470</div>
+      </div>
+    </div>
+
+    <div class="bar-row" id="row-2" onclick="selectLayer(2)">
+      <div class="bar-level">L3</div>
+      <div class="bar-graphic">
+        <div class="bar-seg" id="s2-0" style="height:10px"></div>
+        <div class="bar-seg" id="s2-1" style="height:16px"></div>
+        <div class="bar-seg" id="s2-2" style="height:22px"></div>
+        <div class="bar-seg" id="s2-3" style="height:28px"></div>
+        <div class="bar-seg" id="s2-4" style="height:34px"></div>
+      </div>
+      <div class="bar-info">
+        <div class="bar-name" id="bn-2">CONTAINER RUNTIME</div>
+        <div class="bar-status" id="bs-2" style="color:#1a3040;">NVIDIA Container Toolkit</div>
+      </div>
+    </div>
+
+    <div class="bar-row" id="row-3" onclick="selectLayer(3)">
+      <div class="bar-level">L4</div>
+      <div class="bar-graphic">
+        <div class="bar-seg" id="s3-0" style="height:10px"></div>
+        <div class="bar-seg" id="s3-1" style="height:16px"></div>
+        <div class="bar-seg" id="s3-2" style="height:22px"></div>
+        <div class="bar-seg" id="s3-3" style="height:28px"></div>
+        <div class="bar-seg" id="s3-4" style="height:34px"></div>
+      </div>
+      <div class="bar-info">
+        <div class="bar-name" id="bn-3">APPLICATION</div>
+        <div class="bar-status" id="bs-3" style="color:#1a3040;">PyTorch • CUDA • Docker</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel">
+    <div class="detail-inactive" id="detail-placeholder">← SELECT A LAYER<br>TO INSPECT</div>
+
+    <!-- Layer 0: Hardware -->
+    <div class="detail-content" id="detail-0">
+      <div class="detail-layer" style="color:#00aaff;">Layer 1 — Hardware</div>
+      <div class="detail-title" style="color:#00aaff;">Linux Kernel + GPU Device</div>
+      <div class="command-block" style="border-left-color:#00aaff;">lspci | grep -i nvidia
+lsmod | grep nvidia</div>
+      <div class="output-block" id="out-0"></div>
+      <div class="detail-desc">The GPU must be visible to the PCI bus and the kernel module must be loaded. This layer is passive — it either works or it doesn't. If <code>lspci</code> shows nothing, it's a hardware or BIOS issue. If <code>lsmod</code> shows nothing, the driver isn't installed.</div>
+    </div>
+
+    <!-- Layer 1: Driver -->
+    <div class="detail-content" id="detail-1">
+      <div class="detail-layer" style="color:#ffcc00;">Layer 2 — Driver</div>
+      <div class="detail-title" style="color:#ffcc00;">nvidia-driver-470</div>
+      <div class="command-block" style="border-left-color:#ffcc00;">ubuntu-drivers devices
+sudo apt install nvidia-driver-470
+sudo reboot
+nvidia-smi</div>
+      <div class="output-block" id="out-1"></div>
+      <div class="detail-desc">The driver is the bridge between OS and GPU silicon. Version must match GPU architecture — GT 710 is Kepler, which tops out at driver 470 and CUDA 11.4. Wrong driver = silent failure or kernel panic.</div>
+    </div>
+
+    <!-- Layer 2: CTK -->
+    <div class="detail-content" id="detail-2">
+      <div class="detail-layer" style="color:#a855f7;">Layer 3 — Container Runtime</div>
+      <div class="detail-title" style="color:#a855f7;">NVIDIA Container Toolkit</div>
+      <div class="command-block" style="border-left-color:#a855f7;">sudo apt install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker</div>
+      <div class="output-block" id="out-2"></div>
+      <div class="detail-desc">The toolkit wraps Docker's runtime to intercept GPU requests. Without it, <code>--gpus all</code> is silently ignored. This layer also exposes GPU device nodes into the container namespace.</div>
+    </div>
+
+    <!-- Layer 3: Application -->
+    <div class="detail-content" id="detail-3">
+      <div class="detail-layer" style="color:#00e5a0;">Layer 4 — Application</div>
+      <div class="detail-title" style="color:#00e5a0;">PyTorch + CUDA + Docker</div>
+      <div class="command-block" style="border-left-color:#00e5a0;">docker run --rm --gpus all \
+  nvidia/cuda:12.1.1-base-ubuntu22.04 \
+  nvidia-smi</div>
+      <div class="output-block" id="out-3"></div>
+      <div class="detail-desc">The final validation: GPU visible inside a container. When this works, the entire stack is operational. PyTorch can call <code>.cuda()</code>, models can be moved to GPU memory, and training infrastructure is ready.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Status cards -->
+<div class="status-bar">
+  <div class="status-card" id="sc-0"><div class="s-label">Hardware</div><div class="s-val" id="sv-0">—</div></div>
+  <div class="status-card" id="sc-1"><div class="s-label">Driver</div><div class="s-val" id="sv-1">—</div></div>
+  <div class="status-card" id="sc-2"><div class="s-label">CTK Runtime</div><div class="s-val" id="sv-2">—</div></div>
+  <div class="status-card" id="sc-3"><div class="s-label">GPU in Docker</div><div class="s-val" id="sv-3">—</div></div>
+</div>
+
+<div class="ticker"><span id="ticker-text">Select a scenario above to simulate stack state</span></div>
+
+<script>
+const scenarios = {
+  broken: {
+    layers: [
+      { lit: 2, color: 'yellow', status: '✓ GPU detected via lspci', statusColor: '#ffcc00' },
+      { lit: 0, color: 'red',    status: '✗ no kernel module loaded', statusColor: '#ff4444' },
+      { lit: 0, color: 'red',    status: '✗ CTK not installed',       statusColor: '#ff4444' },
+      { lit: 0, color: 'red',    status: '✗ --gpus flag not working', statusColor: '#ff4444' },
+    ],
+    outputs: [
+      "01:00.0 VGA: NVIDIA GK208B [GeForce GT 710]\n(nvidia module) NOT in lsmod",
+      "NVIDIA-SMI has failed because it couldn't\ncommunicate with the NVIDIA driver.",
+      "nvidia-container-cli: not found",
+      "docker: Error response from daemon:\ncould not select device driver \"\" with capabilities: [[gpu]]"
+    ],
+    statuses: ['DETECTED', 'FAILED', 'MISSING', 'BLOCKED'],
+    statusColors: ['#ffcc00','#ff4444','#ff4444','#ff4444'],
+    ticker: '⚡ Stack broken at L2 — driver missing. All layers above are blocked.'
+  },
+  driver: {
+    layers: [
+      { lit: 5, color: 'green', status: '✓ GPU + kernel module OK',   statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ Driver 470.256.02 loaded', statusColor: '#00e5a0' },
+      { lit: 0, color: 'red',   status: '✗ CTK not installed',        statusColor: '#ff4444' },
+      { lit: 0, color: 'red',   status: '✗ --gpus flag not working',  statusColor: '#ff4444' },
+    ],
+    outputs: [
+      "01:00.0 VGA: NVIDIA GK208B [GeForce GT 710]\nnvidia 3145728 0  ← module loaded ✓",
+      "Driver Version: 470.256.02\nCUDA Version: 11.4\nGPU: GeForce GT 710 | 208MiB / 1998MiB",
+      "nvidia-container-cli: not found",
+      "docker: Error response from daemon:\ncould not select device driver..."
+    ],
+    statuses: ['OK','OK','MISSING','BLOCKED'],
+    statusColors: ['#00e5a0','#00e5a0','#ff4444','#ff4444'],
+    ticker: '✓ L1+L2 healthy. Install NVIDIA Container Toolkit to unblock L3 and L4.'
+  },
+  toolkit: {
+    layers: [
+      { lit: 5, color: 'green', status: '✓ GPU + kernel module OK',     statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ Driver 470.256.02 loaded',   statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ CTK configured for Docker',  statusColor: '#00e5a0' },
+      { lit: 2, color: 'yellow',status: '⟳ Running verification test',  statusColor: '#ffcc00' },
+    ],
+    outputs: [
+      "01:00.0 VGA: NVIDIA GK208B [GeForce GT 710]\nnvidia 3145728 0  ← loaded ✓",
+      "Driver Version: 470.256.02 | CUDA: 11.4",
+      "nvidia-container-toolkit installed\nRuntime configured: /etc/docker/daemon.json\nDocker restarted ✓",
+      "Running: docker run --rm --gpus all nvidia/cuda:12.1.1..."
+    ],
+    statuses: ['OK','OK','CONFIGURED','TESTING'],
+    statusColors: ['#00e5a0','#00e5a0','#00e5a0','#ffcc00'],
+    ticker: '⟳ L3 configured. Running end-to-end GPU passthrough verification...'
+  },
+  full: {
+    layers: [
+      { lit: 5, color: 'green', status: '✓ GPU detected • module loaded', statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ Driver 470.256.02 • CUDA 11.4',statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ GPU passthrough verified',      statusColor: '#00e5a0' },
+      { lit: 5, color: 'green', status: '✓ nvidia-smi inside container',   statusColor: '#00e5a0' },
+    ],
+    outputs: [
+      "01:00.0 VGA: NVIDIA GK208B [GeForce GT 710]\nnvidia 3145728 0  ← loaded ✓",
+      "+--------------------------------------+\n| NVIDIA-SMI 470.256.02                |\n| GPU 0: GeForce GT 710 ✓              |\n| CUDA Version: 11.4                   |\n+--------------------------------------+",
+      "NVIDIA Container Toolkit v1.14\nRuntime: nvidia-container-runtime\nDocker Root Dir: /data/docker ✓",
+      "+--------------------------------------+\n| nvidia-smi INSIDE CONTAINER          |\n| GPU 0: GeForce GT 710 ✓              |\n| GPU passthrough: WORKING             |\n+--------------------------------------+"
+    ],
+    statuses: ['OK','OK','OK','OK'],
+    statusColors: ['#00e5a0','#00e5a0','#00e5a0','#00e5a0'],
+    ticker: '✓ Full stack operational — GPU visible inside Docker container. Infrastructure ready.'
+  }
+};
+
+let currentScenario = 'broken';
+let currentLayer = null;
+
+function applyScenario(name) {
+  currentScenario = name;
+  const sc = scenarios[name];
+
+  sc.layers.forEach((layer, i) => {
+    // Signal bars
+    for (let j = 0; j < 5; j++) {
+      const seg = document.getElementById(`s${i}-${j}`);
+      seg.className = 'bar-seg';
+      if (j < layer.lit) {
+        seg.classList.add('lit-' + layer.color);
+        if (layer.lit < 5 && j === layer.lit - 1) seg.classList.add('pulse');
+      }
+    }
+
+    // Bar label
+    const bn = document.getElementById(`bn-${i}`);
+    bn.classList.toggle('lit', layer.lit > 0);
+
+    // Bar status
+    const bs = document.getElementById(`bs-${i}`);
+    bs.textContent = layer.status;
+    bs.style.color = layer.statusColor;
+
+    // Status cards
+    document.getElementById(`sv-${i}`).textContent = sc.statuses[i];
+    document.getElementById(`sv-${i}`).style.color = sc.statusColors[i];
+    document.getElementById(`sc-${i}`).style.borderColor = sc.statusColors[i];
+
+    // Update detail output if that layer is selected
+    const out = document.getElementById(`out-${i}`);
+    if (out) out.textContent = sc.outputs[i];
+  });
+
+  document.getElementById('ticker-text').textContent = sc.ticker;
+}
+
+function setScenario(name, btn) {
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyScenario(name);
+}
+
+function selectLayer(i) {
+  // Deselect all rows
+  document.querySelectorAll('.bar-row').forEach(r => r.classList.remove('selected'));
+  document.getElementById(`row-${i}`).classList.add('selected');
+
+  // Hide all detail panels
+  document.getElementById('detail-placeholder').style.display = 'none';
+  document.querySelectorAll('.detail-content').forEach(d => d.classList.remove('active'));
+  document.getElementById(`detail-${i}`).classList.add('active');
+  currentLayer = i;
+}
+
+// Init
+applyScenario('broken');
+</script>
+</body>
+</html>

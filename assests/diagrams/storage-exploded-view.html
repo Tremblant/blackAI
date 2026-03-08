@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #05080c;
+    --font: 'JetBrains Mono', monospace;
+    --green: #00e5a0;
+    --blue: #00aaff;
+    --orange: #ff8c00;
+    --red: #ff4444;
+    --dim: #2a4060;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: #c8d8e8;
+    padding: 28px 20px;
+    overflow-x: hidden;
+  }
+
+  .title { text-align: center; font-size: 0.68rem; letter-spacing: 0.15em; color: #2a4060; text-transform: uppercase; margin-bottom: 5px; }
+  .subtitle { text-align: center; font-size: 1rem; font-weight: 700; color: #00aaff; margin-bottom: 6px; }
+  .tagline { text-align: center; font-size: 0.72rem; color: #2a4060; margin-bottom: 30px; }
+
+  /* ── Scenario buttons ── */
+  .controls {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .btn {
+    background: transparent; border: 1px solid #1a2a3a; color: #2a4060;
+    font-family: var(--font); font-size: 0.7rem; letter-spacing: 0.08em;
+    padding: 7px 16px; cursor: pointer; transition: all 0.25s; text-transform: uppercase;
+  }
+  .btn:hover, .btn.active { border-color: #00aaff; color: #00aaff; background: rgba(0,170,255,0.06); }
+  .btn.danger { border-color: #ff4444; color: #ff4444; background: rgba(255,68,68,0.06); }
+
+  /* ── Stack container ── */
+  .stack-container {
+    position: relative;
+    max-width: 680px;
+    margin: 0 auto;
+    perspective: 1200px;
+  }
+
+  /* ── Individual layer ── */
+  .layer {
+    position: relative;
+    border: 1px solid #1a2a3a;
+    margin-bottom: 4px;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+                margin-bottom 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+                border-color 0.3s,
+                box-shadow 0.3s,
+                opacity 0.3s;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .layer:hover { border-color: #2a4a6a; }
+
+  .layer.exploded {
+    margin-bottom: 40px;
+    transform: translateY(-12px);
+  }
+
+  .layer.crashed {
+    border-color: var(--red) !important;
+    box-shadow: 0 0 20px rgba(255,68,68,0.3);
+    animation: crash-shake 0.5s ease-in-out;
+  }
+
+  .layer.safe {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 16px rgba(0,229,160,0.2);
+  }
+
+  .layer.dimmed { opacity: 0.25; }
+
+  @keyframes crash-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .layer-inner {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    min-height: 80px;
+  }
+
+  .layer-id {
+    padding: 16px 20px;
+    border-right: 1px solid #1a2a3a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .disk-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid;
+    display: inline-block;
+    margin-bottom: 6px;
+    width: fit-content;
+  }
+
+  .layer-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .layer-mount {
+    font-size: 0.7rem;
+    color: #2a4060;
+    margin-top: 2px;
+  }
+
+  .layer-content {
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .content-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    border: 1px solid #1a2a3a;
+    color: #4a6070;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+
+  .chip.highlighted { border-color: inherit; color: inherit; }
+
+  .layer-desc {
+    font-size: 0.68rem;
+    color: #2a4060;
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  /* ── Connector lines between layers ── */
+  .connector {
+    height: 4px;
+    margin: 0 auto;
+    width: 2px;
+    background: #1a2a3a;
+    transition: all 0.6s;
+    position: relative;
+    z-index: 10;
+  }
+  .connector.exploded { height: 40px; }
+  .connector.hidden { opacity: 0; }
+
+  /* ── Status overlay for crash demo ── */
+  .crash-overlay {
+    display: none;
+    position: absolute;
+    top: 0; right: 0;
+    padding: 4px 10px;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .crash-overlay.show { display: block; }
+
+  /* ── Disk size bar ── */
+  .disk-bar {
+    height: 3px;
+    background: #1a2a3a;
+    margin: 8px 0 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .disk-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  /* Layer-specific colors */
+  .layer-sys .disk-badge { border-color: #00aaff; color: #00aaff; }
+  .layer-sys .layer-name { color: #00aaff; }
+  .layer-sys .chip.highlighted { border-color: #00aaff; color: #00aaff; }
+  .layer-sys .disk-fill { background: #00aaff; }
+
+  .layer-app .disk-badge { border-color: #a855f7; color: #a855f7; }
+  .layer-app .layer-name { color: #a855f7; }
+  .layer-app .chip.highlighted { border-color: #a855f7; color: #a855f7; }
+  .layer-app .disk-fill { background: #a855f7; }
+
+  .layer-data .disk-badge { border-color: #00e5a0; color: #00e5a0; }
+  .layer-data .layer-name { color: #00e5a0; }
+  .layer-data .chip.highlighted { border-color: #00e5a0; color: #00e5a0; }
+  .layer-data .disk-fill { background: #00e5a0; }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 680px;
+    margin: 24px auto 0;
+  }
+  .stat-card {
+    border: 1px solid #1a2a3a;
+    padding: 12px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0.1em; color: #2a4060; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-val { font-size: 1.2rem; font-weight: 700; transition: color 0.3s; }
+  .stat-unit { font-size: 0.6rem; color: #2a4060; margin-top: 2px; }
+
+  .alert-banner {
+    max-width: 680px;
+    margin: 16px auto 0;
+    padding: 10px 16px;
+    border: 1px solid #ff4444;
+    background: rgba(255,68,68,0.06);
+    font-size: 0.72rem;
+    color: #ff4444;
+    display: none;
+    letter-spacing: 0.04em;
+  }
+  .alert-banner.show { display: block; }
+  .safe-banner {
+    max-width: 680px;
+    margin: 16px auto 0;
+    padding: 10px 16px;
+    border: 1px solid #00e5a0;
+    background: rgba(0,229,160,0.04);
+    font-size: 0.72rem;
+    color: #00e5a0;
+    display: none;
+    letter-spacing: 0.04em;
+  }
+  .safe-banner.show { display: block; }
+</style>
+</head>
+<body>
+
+<p class="title">Interactive Architecture Diagram</p>
+<p class="subtitle">Storage Architecture — Exploded View</p>
+<p class="tagline">Three-disk separation • Failure isolation • Enterprise pattern</p>
+
+<div class="controls">
+  <button class="btn active" onclick="setView('stacked', this)">Stacked View</button>
+  <button class="btn" onclick="setView('exploded', this)">Explode Layers</button>
+  <button class="btn danger" onclick="setView('crash', this)">⚡ Simulate Crash</button>
+  <button class="btn" onclick="setView('scale', this)">Scale Event</button>
+</div>
+
+<!-- LAYERS -->
+<div class="stack-container" id="stack">
+
+  <!-- SYSTEM DISK -->
+  <div class="layer layer-sys" id="layer-sys">
+    <div class="crash-overlay" id="crash-sys" style="background:#ff444420; color:#ff4444;">⚡ DISK FULL</div>
+    <div class="layer-inner">
+      <div class="layer-id">
+        <span class="disk-badge">sdb</span>
+        <span class="layer-name">SYSTEM<br>LAYER</span>
+        <span class="layer-mount">mounted: /</span>
+        <div class="disk-bar"><div class="disk-fill" id="fill-sys" style="width: 28%"></div></div>
+        <span class="layer-mount" id="pct-sys" style="margin-top:3px;">28% used • 119GB</span>
+      </div>
+      <div class="layer-content">
+        <div class="content-items">
+          <span class="chip highlighted">Docker Engine</span>
+          <span class="chip highlighted">Minikube</span>
+          <span class="chip highlighted">kubectl</span>
+          <span class="chip highlighted">OS Kernel</span>
+          <span class="chip">systemd</span>
+          <span class="chip">networking</span>
+          <span class="chip">SSH</span>
+        </div>
+        <p class="layer-desc" id="desc-sys">Runs the platform. Immutable reference — never stores runtime artifacts.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector" id="conn-1"></div>
+
+  <!-- APP DISK -->
+  <div class="layer layer-app" id="layer-app">
+    <div class="layer-inner">
+      <div class="layer-id">
+        <span class="disk-badge">sda</span>
+        <span class="layer-name">APPLICATION<br>LAYER</span>
+        <span class="layer-mount">mounted: /apps</span>
+        <div class="disk-bar"><div class="disk-fill" id="fill-app" style="width: 4%"></div></div>
+        <span class="layer-mount" id="pct-app" style="margin-top:3px;">4% used • 932GB</span>
+      </div>
+      <div class="layer-content">
+        <div class="content-items">
+          <span class="chip highlighted">Source Code</span>
+          <span class="chip highlighted">Dockerfiles</span>
+          <span class="chip highlighted">K8s Manifests</span>
+          <span class="chip highlighted">Notebooks</span>
+          <span class="chip">requirements.txt</span>
+          <span class="chip">CI/CD configs</span>
+          <span class="chip">IaC (Terraform)</span>
+        </div>
+        <p class="layer-desc" id="desc-app">Defines behaviour. All code, all infra definitions. No runtime state stored here.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector" id="conn-2"></div>
+
+  <!-- DATA DISK -->
+  <div class="layer layer-data" id="layer-data">
+    <div class="layer-inner">
+      <div class="layer-id">
+        <span class="disk-badge">sdc</span>
+        <span class="layer-name">DATA<br>LAYER</span>
+        <span class="layer-mount">mounted: /data</span>
+        <div class="disk-bar"><div class="disk-fill" id="fill-data" style="width: 6%"></div></div>
+        <span class="layer-mount" id="pct-data" style="margin-top:3px;">6% used • 932GB</span>
+      </div>
+      <div class="layer-content">
+        <div class="content-items">
+          <span class="chip highlighted">model.pt (8.3GB)</span>
+          <span class="chip highlighted">Docker Images</span>
+          <span class="chip highlighted">Datasets</span>
+          <span class="chip highlighted">PVC Volumes</span>
+          <span class="chip">Training logs</span>
+          <span class="chip">Inference logs</span>
+          <span class="chip">Metrics history</span>
+        </div>
+        <p class="layer-desc" id="desc-data">Persists all artifacts. Isolated from OS — survives system rebuilds. Mirrors S3/EFS in cloud.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Alerts -->
+<div class="alert-banner" id="alert-crash">
+  ⚡ SYSTEM DISK REACHED 100% — OS SERVICES HALTED. Docker daemon stopped. K8s pods evicted. <strong>Data on /data (sdc) is unaffected.</strong>
+</div>
+<div class="safe-banner" id="banner-safe">
+  ✓ FAILURE ISOLATED — /data (sdc) remained online. Models, images, and datasets are intact. Recovery: wipe and reinstall sdb only.
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card" id="stat-sys-card">
+    <div class="stat-label">System Disk Used</div>
+    <div class="stat-val" id="stat-sys" style="color:#00aaff;">28%</div>
+    <div class="stat-unit">of 119GB (sdb)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">App Disk Used</div>
+    <div class="stat-val" style="color:#a855f7;" id="stat-app">4%</div>
+    <div class="stat-unit">of 932GB (sda)</div>
+  </div>
+  <div class="stat-card" id="stat-data-card">
+    <div class="stat-label">Data Disk Used</div>
+    <div class="stat-val" style="color:#00e5a0;" id="stat-data">6%</div>
+    <div class="stat-unit">of 932GB (sdc)</div>
+  </div>
+</div>
+
+<script>
+function clearAll() {
+  ['layer-sys','layer-app','layer-data'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('exploded','crashed','safe','dimmed');
+  });
+  ['conn-1','conn-2'].forEach(id => {
+    document.getElementById(id).classList.remove('exploded','hidden');
+  });
+  document.getElementById('crash-sys').classList.remove('show');
+  document.getElementById('alert-crash').classList.remove('show');
+  document.getElementById('banner-safe').classList.remove('show');
+
+  // Reset fills
+  document.getElementById('fill-sys').style.width = '28%';
+  document.getElementById('fill-data').style.width = '6%';
+  document.getElementById('stat-sys').textContent = '28%';
+  document.getElementById('stat-data').textContent = '6%';
+  document.getElementById('stat-sys').style.color = '#00aaff';
+  document.getElementById('stat-data').style.color = '#00e5a0';
+  document.getElementById('stat-sys-card').style.borderColor = '#1a2a3a';
+  document.getElementById('stat-data-card').style.borderColor = '#1a2a3a';
+
+  // Reset descriptions
+  document.getElementById('desc-sys').textContent = 'Runs the platform. Immutable reference — never stores runtime artifacts.';
+  document.getElementById('desc-data').textContent = 'Persists all artifacts. Isolated from OS — survives system rebuilds. Mirrors S3/EFS in cloud.';
+}
+
+function setView(mode, btn) {
+  clearAll();
+  document.querySelectorAll('.btn').forEach(b => { b.classList.remove('active'); });
+  btn.classList.add('active');
+
+  if (mode === 'stacked') {
+    // default — already cleared
+  }
+
+  else if (mode === 'exploded') {
+    ['layer-sys','layer-app','layer-data'].forEach(id => {
+      document.getElementById(id).classList.add('exploded');
+    });
+    document.getElementById('conn-1').classList.add('exploded');
+    document.getElementById('conn-2').classList.add('exploded');
+  }
+
+  else if (mode === 'crash') {
+    // System disk fills to 100%
+    document.getElementById('layer-sys').classList.add('crashed');
+    document.getElementById('layer-app').classList.add('dimmed');
+    document.getElementById('layer-data').classList.add('safe');
+    document.getElementById('crash-sys').classList.add('show');
+    document.getElementById('alert-crash').classList.add('show');
+    document.getElementById('banner-safe').classList.add('show');
+
+    // Animate fill to 100%
+    let pct = 28;
+    const interval = setInterval(() => {
+      pct += 4;
+      if (pct >= 100) { pct = 100; clearInterval(interval); }
+      document.getElementById('fill-sys').style.width = pct + '%';
+      document.getElementById('stat-sys').textContent = pct + '%';
+      if (pct > 80) {
+        document.getElementById('stat-sys').style.color = '#ff4444';
+        document.getElementById('stat-sys-card').style.borderColor = '#ff4444';
+      }
+    }, 80);
+
+    // Data disk stays safe
+    document.getElementById('stat-data').style.color = '#00e5a0';
+    document.getElementById('stat-data-card').style.borderColor = '#00e5a0';
+    document.getElementById('desc-sys').textContent = '⚡ DISK FULL — Docker daemon stopped. K8s pods evicted. OS unresponsive.';
+    document.getElementById('desc-data').textContent = '✓ UNAFFECTED — All model artifacts, images, and logs remain intact on sdc.';
+  }
+
+  else if (mode === 'scale') {
+    // Data disk grows (training run stored)
+    document.getElementById('layer-data').classList.add('safe');
+    let pct = 6;
+    const interval = setInterval(() => {
+      pct += 1;
+      if (pct >= 18) { clearInterval(interval); }
+      document.getElementById('fill-data').style.width = pct + '%';
+      document.getElementById('stat-data').textContent = pct + '%';
+    }, 80);
+    document.getElementById('desc-data').textContent = '📈 New training run: +12GB model artifacts written to /data/models. System disk unaffected.';
+  }
+}
+</script>
+</body>
+</html>

@@ -54,7 +54,7 @@ The capstone ties it all together — a reference architecture for a complete ML
 
 ## My North Star
 
-There's a version of AI in Africa that I want to help build — one where startups can ship reliable ML products without needing a staff of 20 infrastructure engineers from San Francisco.
+There's a version of AI in Africa that I want to help build — one where startups can ship reliable ML products without needing a staff of 20 infrastructure engineers like the tech giants.
 
 That means building open, documented, reproducible patterns. Writing them down. Sharing them publicly.
 
